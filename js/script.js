@@ -94,6 +94,7 @@ function tellJoke() {
     speechApi.loadVoices()
       .then((voices) => {
         let voice;
+
         if (joke == null) {
           joke = "Sorry! ... No joke found.";
           voice = voices.filter((voice) => String(voice.lang).startsWith('en'))[0]
@@ -102,10 +103,26 @@ function tellJoke() {
           voice = voices.filter((voice) => voice.name === selectedVoiceName)[0]
         }
 
-        const utterance = new SpeechSynthesisUtterance();
-        utterance.text = joke;
-        utterance.voice = voice;
-        speechSynthesis.speak(utterance);
+        const synth = window.speechSynthesis;
+        const utterThis = new SpeechSynthesisUtterance();
+
+        utterThis.text = joke;
+        utterThis.voice = voice;
+        utterThis.voiceURI = 'native';
+        utterThis.lang = voice.lang;
+        utterThis.rate = 1;
+        utterThis.pitch = 1;
+
+        synth.cancel(); // cancel current speak, if any is running
+        synth.speak(utterThis);
+
+        utterThis.onstart = function(event) {
+          console.debug('Utterance has started being spoken.');
+        }
+
+        utterThis.onend = function(event) {
+          console.debug('Utterance has finished being spoken after ' + event.elapsedTime + ' milliseconds.');
+        }
       })
       .catch((error) => console.error("Error loading voice in function tellJoke:\n", error));
   }).catch((error) => {
