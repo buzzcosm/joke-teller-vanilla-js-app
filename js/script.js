@@ -134,5 +134,7 @@ function tellJoke() {
 loadSpeechControls();
 
 // Interactions
-languageSelectElement.addEventListener("change", loadSpeechControls);
-speakButtonElement.addEventListener("click", tellJoke);
+// languageSelectElement.addEventListener("change", loadSpeechControls);
+// speakButtonElement.addEventListener("click", tellJoke);
+languageSelectElement.onchange = loadSpeechControls;
+speakButtonElement.onclick = tellJoke;
