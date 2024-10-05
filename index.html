@@ -6,22 +6,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Joke Teller</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
   <div class="container">
     <div class="speechControls">
-      <select id="languageSelect" class="left"></select>
-      <select id="voiceSelect" class="right"></select>
+      <select id="languageSelect" class="left" hidden></select>
+      <select id="voiceSelect" class="right" hidden></select>
+      <input id="jokeInput" type="text"/>
     </div>
-    <!-- Spinner Loader -->
     <button id="speakButton">speak</button>
   </div>
   <!-- scripts -->
-  <script src="./js/speech-api.js"></script>
-  <script src="./js/script.js"></script>
+  <script src="script.js"></script>
 </body>
 
 </html>
