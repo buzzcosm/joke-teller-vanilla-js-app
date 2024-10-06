@@ -6,6 +6,44 @@ const jokeInput = document.getElementById("jokeInput");
 const speakButton = document.getElementById("speakButton");
 
 let voices = [];
+let currentLanguage;
+
+function getVoices() {
+  return new Promise((resolve, reject) => {
+    // Check if voices are already loaded
+    voices = window.speechSynthesis.getVoices();
+    if (voices.length > 0) {
+      resolve(voices);
+    } else {
+      // Wait for the event if voices are not loaded yet
+      window.speechSynthesis.onvoiceschanged = () => {
+        voices = window.speechSynthesis.getVoices();
+        if (voices.length > 0) {
+          resolve(voices); // Resolve promise with loaded voices
+        } else {
+          reject('No voices available');
+        }
+      };
+    }
+  });
+}
+
+async function getJokes(language = 'en') {
+  let joke;
+  const apiUri = `https://v2.jokeapi.dev/joke/Any?lang=${language}`;
+  try {
+    const response = await fetch(apiUri);
+    const data = await response.json();
+    if (data.setup) {
+      joke = `${data.setup} ... ${data.delivery}`;
+    } else {
+      joke = data.joke;
+    }
+    return joke;
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 function populateLanguages() {
   const languages = [
@@ -25,65 +63,64 @@ function populateLanguages() {
   })
 }
 
-function populateVoiceList() {
-  const language = languageSelect.value || 'en';
-  voices = synth.getVoices().filter(function (voice) { return voice.lang.includes(language); }).sort(function (a, b) {
-    const aname = a.name.toUpperCase();
-    const bname = b.name.toUpperCase();
-
-    if (aname < bname) {
-      return -1;
-    } else if (aname == bname) {
-      return 0;
-    } else {
-      return +1;
-    }
-  });
-  const selectedIndex = voiceSelect.selectedIndex < 0 ? 0 : voiceSelect.selectedIndex;
-  voiceSelect.innerHTML = "";
-
-  for (let i = 0; i < voices.length; i++) {
-    const option = document.createElement("option");
-    option.textContent = `${voices[i].name} (${voices[i].lang})`;
-
-    if (voices[i].default) {
-      option.textContent += " -- DEFAULT";
-    }
-
-    option.setAttribute("data-lang", voices[i].lang);
-    option.setAttribute("data-name", voices[i].name);
-    voiceSelect.appendChild(option);
-  }
-  voiceSelect.selectedIndex = selectedIndex;
-}
-
-function loadVoiceList() {
+async function populateVoices() {
+  voices = await getVoices();
   if (languageSelect.children.length === 0) {
-    populateLanguages();  
+    populateLanguages();
   }
-  populateVoiceList();
-  if (speechSynthesis.onvoiceschanged !== undefined) {
-    speechSynthesis.onvoiceschanged = populateVoiceList;
-  }
+  currentLanguage = languageSelect.value;
+  console.log(currentLanguage);
+  // console.log(voices);
+
+
+
+  // const language = languageSelect.value || 'en';
+  // voices = synth.getVoices().filter(function (voice) { return voice.lang.includes(language); }).sort(function (a, b) {
+  //   const aname = a.name.toUpperCase();
+  //   const bname = b.name.toUpperCase();
+
+  //   if (aname < bname) {
+  //     return -1;
+  //   } else if (aname == bname) {
+  //     return 0;
+  //   } else {
+  //     return +1;
+  //   }
+  // });
+  // const selectedIndex = voiceSelect.selectedIndex < 0 ? 0 : voiceSelect.selectedIndex;
+  // voiceSelect.innerHTML = "";
+
+  // for (let i = 0; i < voices.length; i++) {
+  //   const option = document.createElement("option");
+  //   option.textContent = `${voices[i].name} (${voices[i].lang})`;
+
+  //   if (voices[i].default) {
+  //     option.textContent += " -- DEFAULT";
+  //   }
+
+  //   option.setAttribute("data-lang", voices[i].lang);
+  //   option.setAttribute("data-name", voices[i].name);
+  //   voiceSelect.appendChild(option);
+  // }
+  // voiceSelect.selectedIndex = selectedIndex;
+
 }
+
+// async function loadVoiceList() {
+//   if (languageSelect.children.length === 0) {
+//     populateLanguages();  
+//   }
+//   voices = await loadVoices();
+//   // populateVoiceList();
+//   // if (speechSynthesis.onvoiceschanged !== undefined) {
+//   //   speechSynthesis.onvoiceschanged = populateVoiceList;
+//   // }
+//   console.log('language', languageSelect.value);
+//   console.log(voices);
+// }
 
 // get joke from API
-async function getJokes(language = 'en') {
-  let joke;
-  const apiUri = `https://v2.jokeapi.dev/joke/Any?lang=${language}`;
-  try {
-    const response = await fetch(apiUri);
-    const data = await response.json();
-    if (data.setup) {
-      joke = `${data.setup} ... ${data.delivery}`;
-    } else {
-      joke = data.joke;
-    }
-    return joke;
-  } catch (error) {
-    console.error(error);
-  }
-}
+
 
 async function tellJoke() {
   // const selectedIndex = voiceSelect.selectedIndex;
@@ -123,13 +160,15 @@ async function tellJoke() {
 
 async function speak() {
   // const joke = 'Warum sollte man nie Cola und Bier gleichzeitig trinken? ... Weil man dann colabiert.';
-  const joke = await getJokes();
+  const joke = await getJokes(currentLanguage);
+  console.log(joke);
+
   const utterThis = new SpeechSynthesisUtterance(joke);
   synth.speak(utterThis);
 }
 
-// languageSelect.onchange = loadVoiceList;
+languageSelect.onchange = populateVoices;
 speakButton.onclick = speak;
 
 // On load
-// loadVoiceList();
+populateVoices();
