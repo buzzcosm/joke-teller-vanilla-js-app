@@ -2,7 +2,6 @@ const synth = window.speechSynthesis;
 
 const languageSelect = document.getElementById("languageSelect");
 const voiceSelect = document.getElementById("voiceSelect");
-const jokeInput = document.getElementById("jokeInput");
 const speakButton = document.getElementById("speakButton");
 
 let voices = [];
@@ -49,16 +48,19 @@ async function populateVoices() {
   console.log('language:', languageSelect.value);
 }
 
-function speak() {
-  const joke = 'Warum sollte man nie Cola und Bier gleichzeitig trinken? ... Weil man dann colabiert.';
-  // const joke = await getJokes(languageSelect.value);
-  console.log(joke);
-  const utterThis = new SpeechSynthesisUtterance(joke);
+function speak({text, voice}) {
+  const utterThis = new SpeechSynthesisUtterance(text);
   synth.speak(utterThis);
 }
 
+async function tellJoke() {
+  const joke = await getJokes(languageSelect.value);
+  console.log(joke);
+  speak({text: joke, voice: null});
+}
+
 languageSelect.onchange = populateVoices;
-speakButton.onclick = speak;
+speakButton.onclick = tellJoke;
 
 // On load
 populateVoices();
