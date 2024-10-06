@@ -49,9 +49,9 @@ async function populateVoices() {
   console.log('language:', languageSelect.value);
 }
 
-async function speak() {
-  // const joke = 'Warum sollte man nie Cola und Bier gleichzeitig trinken? ... Weil man dann colabiert.';
-  const joke = await getJokes(languageSelect.value);
+function speak() {
+  const joke = 'Warum sollte man nie Cola und Bier gleichzeitig trinken? ... Weil man dann colabiert.';
+  // const joke = await getJokes(languageSelect.value);
   console.log(joke);
   const utterThis = new SpeechSynthesisUtterance(joke);
   synth.speak(utterThis);
