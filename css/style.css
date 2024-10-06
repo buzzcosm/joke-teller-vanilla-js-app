@@ -1,0 +1,141 @@
+html {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #45badd;
+}
+
+.container {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background-size: contain;
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+.speechControls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  position: fixed;
+  top: 0;
+  margin-top: 10px;
+  width: 95%;
+  z-index: 100;
+}
+
+select {
+  padding: 0.3rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  outline: none;
+  margin-bottom: 10px;
+  font-family: Courier, monospace;
+  font-size: 16px;
+  color: whitesmoke;
+  background: rgba(0, 0, 0, 0.3);
+  border: none;
+  order: none;
+  box-shadow: 2px 2px 20px 10px rgba(0, 0, 0, 0.2);
+}
+
+select:hover {
+  filter: brightness(95%);
+}
+
+select:disabled {
+  cursor: default;
+  filter: brightness(30%);
+}
+
+select.left {
+  width: 30%;
+}
+
+select.right {
+  width: 70%;
+}
+
+#robot {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: auto;
+  height: auto;
+  z-index: -1;
+}
+
+button {
+  cursor: pointer;
+  outline: none;
+  width: 200px;
+  height: 50px;
+  font-family: Courier, monospace;
+  font-size: 20px;
+  color: white;
+  background: #ff3482;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 2px 2px 20px 10px rgba(0, 0, 0, 0.2);
+}
+
+button:hover {
+  filter: brightness(95%);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+button:disabled {
+  cursor: default;
+  filter: brightness(30%);
+}
+
+@media screen and (max-width: 1000px) {
+  .container {
+    background-position: center center;
+    background-size: cover;
+  }
+
+  .speechControls {
+    flex-direction: column;
+  }
+
+  select.left {
+    width: 60%;
+  }
+  
+  select.right {
+    width: 60%;
+  }
+
+  button {
+    box-shadow: 5px 5px 30px 20px rgba(0, 0, 0, 0.5);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .speechControls {
+    flex-direction: column;
+  }
+
+  select.left {
+    width: 90%;
+  }
+  
+  select.right {
+    width: 90%;
+  }
+}
