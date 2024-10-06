@@ -45,9 +45,9 @@ function getVoices() {
 
 function populateLanguages() {
   const languages = [
-    {'short': 'cs', 'label': 'Czech', 'active': true},
-    {'short': 'de', 'label': 'German', 'active': true},
     {'short': 'en', 'label': 'English', 'active': true},
+    {'short': 'de', 'label': 'German', 'active': true},
+    {'short': 'cs', 'label': 'Czech', 'active': true},
     {'short': 'es', 'label': 'Spanish', 'active': true},
     {'short': 'fr', 'label': 'French', 'active': true},
     {'short': 'pt', 'label': 'Portuguese', 'active': true},
