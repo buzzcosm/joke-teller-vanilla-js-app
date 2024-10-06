@@ -67,21 +67,6 @@ select.right {
   width: 70%;
 }
 
-#jokeInput {
-  padding: 0.3rem;
-  width: 95%;
-  border-radius: 0.5rem;
-  outline: none;
-  margin-bottom: 10px;
-  font-family: Courier, monospace;
-  font-size: 16px;
-  color: whitesmoke;
-  background: rgba(0, 0, 0, 0.3);
-  border: none;
-  order: none;
-  box-shadow: 2px 2px 20px 10px rgba(0, 0, 0, 0.2);
-}
-
 button {
   cursor: pointer;
   outline: none;

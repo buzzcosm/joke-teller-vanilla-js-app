@@ -3,9 +3,9 @@ const synth = window.speechSynthesis;
 const languageSelect = document.getElementById("languageSelect");
 const voiceSelect = document.getElementById("voiceSelect");
 const speakButton = document.getElementById("speakButton");
-const jokeParagraph = document.getElementById("jokeParagraph");
+// const jokeParagraph = document.getElementById("jokeParagraph");
 // const speakEvent = new CustomEvent("speak");
-const customEvent = new CustomEvent("myCustomEvent");
+// const customEvent = new CustomEvent("myCustomEvent");
 
 let voices = [];
 
@@ -110,11 +110,44 @@ function speak() {
   }
 }
 
-function tellJoke() {
-  getJokes(languageSelect.value).then((joke) => {
-    jokeParagraph.textContent = joke;
-    document.dispatchEvent(customEvent); // Dispatch Custom-Event
-  })
+async function tellJoke() {
+  // dummy startup
+  const placeholderJoke = '';
+  const utterThis = new SpeechSynthesisUtterance(placeholderJoke);
+  synth.speak(utterThis);
+  
+  // tell joke
+  const joke = await getJokes(languageSelect.value);
+  console.log(joke);
+
+  const utterJoke = new SpeechSynthesisUtterance(joke);
+
+  utterJoke.onend = function (event) {
+    console.log("SpeechSynthesisUtterance.onend");
+  };
+
+  utterJoke.onerror = function (event) {
+    console.error("SpeechSynthesisUtterance.onerror");
+  };
+
+  const selectedVoiceName = voiceSelect.selectedOptions[0].getAttribute("data-name");
+    
+  for (let i = 0; i < voices.length; i++) {
+    if (voices[i].name === selectedVoiceName) {
+      utterJoke.voice = voices[i];
+      break;
+    }
+  }
+
+  synth.speak(utterJoke);
+
+
+
+
+  // getJokes(languageSelect.value).then((joke) => {
+  //   jokeParagraph.textContent = joke;
+  //   document.dispatchEvent(customEvent); // Dispatch Custom-Event
+  // })
    // Löst das Custom-Event auf document aus
   // getJokes(languageSelect.value).then((joke) => {
   //   console.log(joke);
@@ -130,13 +163,14 @@ function tellJoke() {
 // }
 
 // On load
-populateVoices();
+// populateVoices();
 
 // Event listeners
+window.onload = populateVoices;
 languageSelect.onchange = populateVoices;
 speakButton.onclick = tellJoke;
-document.addEventListener("myCustomEvent", () => {
-  console.log("Das myCustomEvent wurde auf dem Dokument ausgelöst.");
-  speak();
-});
+// document.addEventListener("myCustomEvent", () => {
+//   console.log("Das myCustomEvent wurde auf dem Dokument ausgelöst.");
+//   speak();
+// });
 // jokeParagraph.addEventListener("speak", speak);
