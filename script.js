@@ -3,9 +3,8 @@ const synth = window.speechSynthesis;
 const languageSelect = document.getElementById("languageSelect");
 const voiceSelect = document.getElementById("voiceSelect");
 const speakButton = document.getElementById("speakButton");
-const jokeParagraph = document.getElementById("jokeParagraph");
-
-const speakEvent = new CustomEvent("speak");
+// const jokeParagraph = document.getElementById("jokeParagraph");
+// const speakEvent = new CustomEvent("speak");
 
 let voices = [];
 
@@ -82,11 +81,11 @@ async function populateVoices() {
     option.setAttribute("data-name", voice.name);
     voiceSelect.appendChild(option);
   });
-  // saveJoke();
 }
 
 function speak() {
-  const text = jokeParagraph.textContent;
+  // const text = jokeParagraph.textContent;
+  const text = 'Habe übrigens ein Blatt gelocht ... aber das nur am Rande!'
   console.log(text);
   if (text !== "") {
     const utterThis = new SpeechSynthesisUtterance(text);
@@ -107,23 +106,21 @@ function speak() {
         break;
       }
     }
-
     synth.speak(utterThis);
   }
 }
 
-async function saveJoke() {
-  const language = languageSelect.value || 'en';
-  const joke = await getJokes(language);
-  jokeParagraph.textContent = joke;
-  jokeParagraph.dispatchEvent(speakEvent);
-}
-
-languageSelect.onchange = populateVoices;
-// voiceSelect.onchange = saveJoke;
-speakButton.onclick = saveJoke;
-
-jokeParagraph.addEventListener("speak", speak);
+// async function saveJoke() {
+//   const language = languageSelect.value || 'en';
+//   const joke = await getJokes(language);
+//   jokeParagraph.textContent = joke;
+//   jokeParagraph.dispatchEvent(speakEvent);
+// }
 
 // On load
 populateVoices();
+
+// Event listeners
+languageSelect.onchange = populateVoices;
+speakButton.onclick = speak;
+// jokeParagraph.addEventListener("speak", speak);
