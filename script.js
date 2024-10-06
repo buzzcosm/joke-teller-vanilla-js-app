@@ -121,8 +121,14 @@ async function tellJoke() {
   synth.speak(utterThis);
 }
 
-languageSelect.onchange = loadVoiceList;
-speakButton.onclick = tellJoke;
+function speak() {
+  const joke = 'Warum sollte man nie Cola und Bier gleichzeitig trinken? ... Weil man dann colabiert.';
+  const utterThis = new SpeechSynthesisUtterance(joke);
+  synth.speak(utterThis);
+}
+
+// languageSelect.onchange = loadVoiceList;
+speakButton.onclick = speak;
 
 // On load
-loadVoiceList();
+// loadVoiceList();
