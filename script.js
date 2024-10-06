@@ -86,7 +86,6 @@ async function populateVoices() {
 function speak() {
   // const text = jokeParagraph.textContent;
   const text = 'Habe übrigens ein Blatt gelocht ... aber das nur am Rande!'
-  console.log(text);
   if (text !== "") {
     const utterThis = new SpeechSynthesisUtterance(text);
 
@@ -110,6 +109,13 @@ function speak() {
   }
 }
 
+function tellJoke() {
+  getJokes(languageSelect.value).then((joke) => {
+    console.log(joke);
+    speak();
+  });
+}
+
 // async function saveJoke() {
 //   const language = languageSelect.value || 'en';
 //   const joke = await getJokes(language);
@@ -122,5 +128,5 @@ populateVoices();
 
 // Event listeners
 languageSelect.onchange = populateVoices;
-speakButton.onclick = speak;
+speakButton.onclick = tellJoke;
 // jokeParagraph.addEventListener("speak", speak);
