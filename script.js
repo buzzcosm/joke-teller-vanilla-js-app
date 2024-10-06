@@ -3,8 +3,9 @@ const synth = window.speechSynthesis;
 const languageSelect = document.getElementById("languageSelect");
 const voiceSelect = document.getElementById("voiceSelect");
 const speakButton = document.getElementById("speakButton");
-// const jokeParagraph = document.getElementById("jokeParagraph");
+const jokeParagraph = document.getElementById("jokeParagraph");
 // const speakEvent = new CustomEvent("speak");
+const customEvent = new CustomEvent("myCustomEvent");
 
 let voices = [];
 
@@ -84,8 +85,8 @@ async function populateVoices() {
 }
 
 function speak() {
-  // const text = jokeParagraph.textContent;
-  const text = 'Habe übrigens ein Blatt gelocht ... aber das nur am Rande!'
+  const text = jokeParagraph.textContent;
+  // const text = 'Habe übrigens ein Blatt gelocht ... aber das nur am Rande!'
   if (text !== "") {
     const utterThis = new SpeechSynthesisUtterance(text);
 
@@ -111,9 +112,14 @@ function speak() {
 
 function tellJoke() {
   getJokes(languageSelect.value).then((joke) => {
-    console.log(joke);
-    speak();
-  });
+    jokeParagraph.textContent = joke;
+    document.dispatchEvent(customEvent); // Dispatch Custom-Event
+  })
+   // Löst das Custom-Event auf document aus
+  // getJokes(languageSelect.value).then((joke) => {
+  //   console.log(joke);
+  //   speak();
+  // });
 }
 
 // async function saveJoke() {
@@ -129,4 +135,8 @@ populateVoices();
 // Event listeners
 languageSelect.onchange = populateVoices;
 speakButton.onclick = tellJoke;
+document.addEventListener("myCustomEvent", () => {
+  console.log("Das myCustomEvent wurde auf dem Dokument ausgelöst.");
+  speak();
+});
 // jokeParagraph.addEventListener("speak", speak);
