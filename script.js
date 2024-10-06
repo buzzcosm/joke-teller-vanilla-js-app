@@ -5,6 +5,8 @@ const voiceSelect = document.getElementById("voiceSelect");
 const speakButton = document.getElementById("speakButton");
 const jokeParagraph = document.getElementById("jokeParagraph");
 
+const speakEvent = new CustomEvent("speak");
+
 let voices = [];
 
 async function getJokes(language = 'en') {
@@ -22,12 +24,6 @@ async function getJokes(language = 'en') {
   } catch (error) {
     console.error(error);
   }
-}
-
-async function saveJoke() {
-  const language = languageSelect.value || 'en';
-  const joke = await getJokes(language);
-  jokeParagraph.textContent = joke;
 }
 
 function getVoices() {
@@ -86,7 +82,7 @@ async function populateVoices() {
     option.setAttribute("data-name", voice.name);
     voiceSelect.appendChild(option);
   });
-  saveJoke();
+  // saveJoke();
 }
 
 function speak() {
@@ -116,9 +112,18 @@ function speak() {
   }
 }
 
+async function saveJoke() {
+  const language = languageSelect.value || 'en';
+  const joke = await getJokes(language);
+  jokeParagraph.textContent = joke;
+  jokeParagraph.dispatchEvent(speakEvent);
+}
+
 languageSelect.onchange = populateVoices;
-voiceSelect.onchange = saveJoke;
-speakButton.onclick = speak;
+// voiceSelect.onchange = saveJoke;
+speakButton.onclick = saveJoke;
+
+jokeParagraph.addEventListener("speak", speak);
 
 // On load
 populateVoices();
