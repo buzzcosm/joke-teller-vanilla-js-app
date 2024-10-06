@@ -121,8 +121,9 @@ async function tellJoke() {
   synth.speak(utterThis);
 }
 
-function speak() {
-  const joke = 'Warum sollte man nie Cola und Bier gleichzeitig trinken? ... Weil man dann colabiert.';
+async function speak() {
+  // const joke = 'Warum sollte man nie Cola und Bier gleichzeitig trinken? ... Weil man dann colabiert.';
+  const joke = await getJokes();
   const utterThis = new SpeechSynthesisUtterance(joke);
   synth.speak(utterThis);
 }
