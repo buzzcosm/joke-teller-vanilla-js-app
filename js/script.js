@@ -145,24 +145,22 @@ async function tellJoke() {
   
   // tell joke
   const joke = await getJokes(languageSelect.value);
-  console.log(joke);
+  console.debug(joke);
 
   const utterThis = new SpeechSynthesisUtterance(joke);
 
   utterThis.onstart = (event) => {
     disableElements();
-    console.log(`We have started uttering this speech: ${event.utterance.text}`);
+    console.debug(`We have started uttering this speech: ${event.utterance.text}`);
   };
 
   utterThis.onend = (event) => {
     enableElements();
-    console.log(`Utterance has finished being spoken after ${event.elapsedTime} seconds.`);
+    console.debug(`Utterance has finished being spoken after ${event.elapsedTime} seconds.`);
   };
 
   utterThis.onerror = (event) => {
-    console.log(
-      `An error has occurred with the speech synthesis: ${event.error}`,
-    );
+    console.error(`An error has occurred with the speech synthesis: ${event.error}`,);
   };
 
   const selectedVoiceName = voiceSelect.selectedOptions[0].getAttribute("data-name");
