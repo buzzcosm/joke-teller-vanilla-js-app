@@ -95,11 +95,29 @@ async function tellJoke() {
   // console.log(selectedLang);
   // console.log(selectedVoices);
 
-  const voiceName = voiceSelect.options[voiceSelect.selectedIndex].getAttribute('data-name');
+  // const voiceName = voiceSelect.options[voiceSelect.selectedIndex].getAttribute('data-name');
 
   const joke = await getJokes(languageSelect.value);
+
   const utterThis = new SpeechSynthesisUtterance(joke);
-  utterThis.voice = voices.filter((voice) => voice.name === voiceName)[0];
+
+  utterThis.onend = function (event) {
+    console.log("SpeechSynthesisUtterance.onend");
+  };
+
+  utterThis.onerror = function (event) {
+    console.error("SpeechSynthesisUtterance.onerror");
+  };
+
+  const selectedOption = voiceSelect.selectedOptions[0].getAttribute("data-name");
+
+  for (let i = 0; i < voices.length; i++) {
+    if (voices[i].name === selectedOption) {
+      utterThis.voice = voices[i];
+      break;
+    }
+  }
+  
   synth.speak(utterThis);
 }
 
