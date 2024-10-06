@@ -45,15 +45,16 @@ function getVoices() {
 
 function populateLanguages() {
   const languages = [
-    {'short': 'de', 'label': 'German'},
-    {'short': 'en', 'label': 'English'},
-    {'short': 'es', 'label': 'Spanish'},
-    {'short': 'fr', 'label': 'French'},
-    {'short': 'it', 'label': 'Italian'},
-    {'short': 'pt', 'label': 'Portuguese'},
-    {'short': 'ru', 'label': 'Russian'},
+    {'short': 'cs', 'label': 'Czech', 'active': true},
+    {'short': 'de', 'label': 'German', 'active': true},
+    {'short': 'en', 'label': 'English', 'active': true},
+    {'short': 'es', 'label': 'Spanish', 'active': true},
+    {'short': 'fr', 'label': 'French', 'active': true},
+    {'short': 'pt', 'label': 'Portuguese', 'active': true},
+    {'short': 'it', 'label': 'Italian', 'active': false},
+    {'short': 'ru', 'label': 'Russian', 'active': false},
   ];
-  languages.forEach((lang) => {
+  languages.filter((lang) => lang.active).forEach((lang) => {
     const option = document.createElement("option");
     option.textContent = lang.label;
     option.setAttribute("value", lang.short);
@@ -75,6 +76,9 @@ async function populateVoices() {
   filteredVoices.map((voice) => {
     const option = document.createElement("option");
     option.textContent = `${voice.name} (${voice.lang})`;
+    if (voice.default) {
+      option.textContent += " -- DEFAULT";
+    }
     option.setAttribute("data-lang", voice.lang);
     option.setAttribute("data-name", voice.name);
     voiceSelect.appendChild(option);
@@ -85,6 +89,19 @@ function speakPlaceholder() {
   const placeholder = '';
   const utterThis = new SpeechSynthesisUtterance(placeholder);
   synth.speak(utterThis);
+}
+
+// Disable/Enable Button
+function disableElements() {
+  languageSelect.disabled = true;
+  voiceSelect.disabled = true;
+  speakButton.disabled = true;
+}
+
+function enableElements() {
+  languageSelect.disabled = false;
+  voiceSelect.disabled = false;
+  speakButton.disabled = false;
 }
 
 async function tellJoke() {
@@ -98,10 +115,12 @@ async function tellJoke() {
   const utterThis = new SpeechSynthesisUtterance(joke);
 
   utterThis.onstart = (event) => {
+    disableElements();
     console.log(`We have started uttering this speech: ${event.utterance.text}`);
   };
 
   utterThis.onend = (event) => {
+    enableElements();
     console.log(`Utterance has finished being spoken after ${event.elapsedTime} seconds.`);
   };
 
