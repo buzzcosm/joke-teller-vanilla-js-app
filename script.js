@@ -3,7 +3,7 @@ const synth = window.speechSynthesis;
 const languageSelect = document.getElementById("languageSelect");
 const voiceSelect = document.getElementById("voiceSelect");
 const speakButton = document.getElementById("speakButton");
-const jokeText = document.getElementById("jokeText");
+const jokeInput = document.getElementById("jokeInput");
 
 let voices = [];
 
@@ -82,20 +82,32 @@ async function populateVoices() {
   });
 }
 
-function speak({text, voice}) {
-  const utterThis = new SpeechSynthesisUtterance(text);
-  synth.speak(utterThis);
+function speak() {
+  const text = jokeInput.value;
+  console.log(text);
+  if (text !== "") {
+    const utterThis = new SpeechSynthesisUtterance(text);
+    synth.speak(utterThis);
+  }
 }
 
-async function tellJoke() {
-  const joke = await getJokes(languageSelect.value);
+function tellJoke() {
+  getJokes(languageSelect.value).then((joke) => {
+    console.log(joke);
+    const utterThis = new SpeechSynthesisUtterance(joke);
+    synth.speak(utterThis);
+  }).catch((error) => {
+    console.error(error);
+  })
   // const joke = 'Warum sollte man nie Cola und Bier gleichzeitig trinken? ... Weil man dann colabiert.';
-  jokeText.textContent = joke;
+  // jokeInput.blur();
+  // jokeInput.setRangeText(joke);
 
 }
 
 languageSelect.onchange = populateVoices;
 speakButton.onclick = tellJoke;
+// jokeInput.onchange = speak;
 
 // On load
 populateVoices();
