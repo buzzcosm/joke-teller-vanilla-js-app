@@ -3,7 +3,7 @@ const synth = window.speechSynthesis;
 const languageSelect = document.getElementById("languageSelect");
 const voiceSelect = document.getElementById("voiceSelect");
 const speakButton = document.getElementById("speakButton");
-const jokeInput = document.getElementById("jokeInput");
+const jokeParagraph = document.getElementById("jokeParagraph");
 
 let voices = [];
 
@@ -22,6 +22,12 @@ async function getJokes(language = 'en') {
   } catch (error) {
     console.error(error);
   }
+}
+
+async function saveJoke() {
+  const language = languageSelect.value || 'en';
+  const joke = await getJokes(language);
+  jokeParagraph.textContent = joke;
 }
 
 function getVoices() {
@@ -80,34 +86,39 @@ async function populateVoices() {
     option.setAttribute("data-name", voice.name);
     voiceSelect.appendChild(option);
   });
+  saveJoke();
 }
 
 function speak() {
-  const text = jokeInput.value;
+  const text = jokeParagraph.textContent;
   console.log(text);
   if (text !== "") {
     const utterThis = new SpeechSynthesisUtterance(text);
+
+    utterThis.onend = function (event) {
+      console.log("SpeechSynthesisUtterance.onend");
+    };
+
+    utterThis.onerror = function (event) {
+      console.error("SpeechSynthesisUtterance.onerror");
+    };
+
+    const selectedOption = voiceSelect.selectedOptions[0].getAttribute("data-name");
+    
+    for (let i = 0; i < voices.length; i++) {
+      if (voices[i].name === selectedOption) {
+        utterThis.voice = voices[i];
+        break;
+      }
+    }
+
     synth.speak(utterThis);
   }
 }
 
-function tellJoke() {
-  getJokes(languageSelect.value).then((joke) => {
-    console.log(joke);
-    const utterThis = new SpeechSynthesisUtterance(joke);
-    synth.speak(utterThis);
-  }).catch((error) => {
-    console.error(error);
-  })
-  // const joke = 'Warum sollte man nie Cola und Bier gleichzeitig trinken? ... Weil man dann colabiert.';
-  // jokeInput.blur();
-  // jokeInput.setRangeText(joke);
-
-}
-
 languageSelect.onchange = populateVoices;
-speakButton.onclick = tellJoke;
-// jokeInput.onchange = speak;
+voiceSelect.onchange = saveJoke;
+speakButton.onclick = speak;
 
 // On load
 populateVoices();
