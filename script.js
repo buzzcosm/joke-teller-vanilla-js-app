@@ -3,6 +3,7 @@ const synth = window.speechSynthesis;
 const languageSelect = document.getElementById("languageSelect");
 const voiceSelect = document.getElementById("voiceSelect");
 const speakButton = document.getElementById("speakButton");
+const debugText = document.getElementById("debugText");
 
 let voices = [];
 
@@ -21,6 +22,26 @@ async function getJokes(language = 'en') {
   } catch (error) {
     console.error(error);
   }
+}
+
+function getVoices() {
+  return new Promise((resolve, reject) => {
+    // Check if voices are already loaded
+    voices = synth.getVoices();
+    if (voices.length > 0) {
+      resolve(voices);
+    } else {
+      // Wait for the event if voices are not loaded yet
+     synth.onvoiceschanged = () => {
+        voices = synth.getVoices();
+        if (voices.length > 0) {
+          resolve(voices); // Resolve promise with loaded voices
+        } else {
+          reject('No voices available');
+        }
+      };
+    }
+  });
 }
 
 function populateLanguages() {
@@ -45,7 +66,23 @@ async function populateVoices() {
   if (languageSelect.children.length === 0) {
     populateLanguages();
   }
-  console.log('language:', languageSelect.value);
+  if (voices.length === 0) {
+    await getVoices();
+  }
+  if (voiceSelect.children.length > 0) {
+    voiceSelect.innerHTML = "";
+  }
+  const filteredVoices = voices.filter((voice) => String(voice.lang).startsWith(languageSelect.value));
+  filteredVoices.map((voice) => {
+    const option = document.createElement("option");
+    option.textContent = `${voice.name} (${voice.lang})`;
+    option.setAttribute("data-lang", voice.lang);
+    option.setAttribute("data-name", voice.name);
+    voiceSelect.appendChild(option);
+  });
+  // debug
+  debugText.innerHTML = "";
+  debugText.innerHTML = `${languageSelect.value} - ${voiceSelect.value}`;
 }
 
 function speak({text, voice}) {
@@ -53,8 +90,9 @@ function speak({text, voice}) {
   synth.speak(utterThis);
 }
 
-async function tellJoke() {
-  const joke = await getJokes(languageSelect.value);
+function tellJoke() {
+  // const joke = await getJokes(languageSelect.value);
+  const joke = 'Warum sollte man nie Cola und Bier gleichzeitig trinken? ... Weil man dann colabiert.';
   console.log(joke);
   speak({text: joke, voice: null});
 }
