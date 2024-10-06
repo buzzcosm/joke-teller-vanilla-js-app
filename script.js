@@ -3,9 +3,6 @@ const synth = window.speechSynthesis;
 const languageSelect = document.getElementById("languageSelect");
 const voiceSelect = document.getElementById("voiceSelect");
 const speakButton = document.getElementById("speakButton");
-// const jokeParagraph = document.getElementById("jokeParagraph");
-// const speakEvent = new CustomEvent("speak");
-// const customEvent = new CustomEvent("myCustomEvent");
 
 let voices = [];
 
@@ -84,93 +81,49 @@ async function populateVoices() {
   });
 }
 
-function speak() {
-  const text = jokeParagraph.textContent;
-  // const text = 'Habe übrigens ein Blatt gelocht ... aber das nur am Rande!'
-  if (text !== "") {
-    const utterThis = new SpeechSynthesisUtterance(text);
-
-    utterThis.onend = function (event) {
-      console.log("SpeechSynthesisUtterance.onend");
-    };
-
-    utterThis.onerror = function (event) {
-      console.error("SpeechSynthesisUtterance.onerror");
-    };
-
-    const selectedOption = voiceSelect.selectedOptions[0].getAttribute("data-name");
-    
-    for (let i = 0; i < voices.length; i++) {
-      if (voices[i].name === selectedOption) {
-        utterThis.voice = voices[i];
-        break;
-      }
-    }
-    synth.speak(utterThis);
-  }
+function speakPlaceholder() {
+  const placeholder = '';
+  const utterThis = new SpeechSynthesisUtterance(placeholder);
+  synth.speak(utterThis);
 }
 
 async function tellJoke() {
   // dummy startup
-  const placeholderJoke = '';
-  const utterThis = new SpeechSynthesisUtterance(placeholderJoke);
-  synth.speak(utterThis);
+  speakPlaceholder();
   
   // tell joke
   const joke = await getJokes(languageSelect.value);
   console.log(joke);
 
-  const utterJoke = new SpeechSynthesisUtterance(joke);
+  const utterThis = new SpeechSynthesisUtterance(joke);
 
-  utterJoke.onend = function (event) {
-    console.log("SpeechSynthesisUtterance.onend");
+  utterThis.onstart = (event) => {
+    console.log(`We have started uttering this speech: ${event.utterance.text}`);
   };
 
-  utterJoke.onerror = function (event) {
-    console.error("SpeechSynthesisUtterance.onerror");
+  utterThis.onend = (event) => {
+    console.log(`Utterance has finished being spoken after ${event.elapsedTime} seconds.`);
+  };
+
+  utterThis.onerror = (event) => {
+    console.log(
+      `An error has occurred with the speech synthesis: ${event.error}`,
+    );
   };
 
   const selectedVoiceName = voiceSelect.selectedOptions[0].getAttribute("data-name");
     
   for (let i = 0; i < voices.length; i++) {
     if (voices[i].name === selectedVoiceName) {
-      utterJoke.voice = voices[i];
+      utterThis.voice = voices[i];
       break;
     }
   }
 
-  synth.speak(utterJoke);
-
-
-
-
-  // getJokes(languageSelect.value).then((joke) => {
-  //   jokeParagraph.textContent = joke;
-  //   document.dispatchEvent(customEvent); // Dispatch Custom-Event
-  // })
-   // Löst das Custom-Event auf document aus
-  // getJokes(languageSelect.value).then((joke) => {
-  //   console.log(joke);
-  //   speak();
-  // });
+  synth.speak(utterThis);
 }
-
-// async function saveJoke() {
-//   const language = languageSelect.value || 'en';
-//   const joke = await getJokes(language);
-//   jokeParagraph.textContent = joke;
-//   jokeParagraph.dispatchEvent(speakEvent);
-// }
-
-// On load
-// populateVoices();
 
 // Event listeners
 window.onload = populateVoices;
 languageSelect.onchange = populateVoices;
 speakButton.onclick = tellJoke;
-// document.addEventListener("myCustomEvent", () => {
-//   console.log("Das myCustomEvent wurde auf dem Dokument ausgelöst.");
-//   speak();
-// });
-// jokeParagraph.addEventListener("speak", speak);
